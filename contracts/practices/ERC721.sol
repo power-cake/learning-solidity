@@ -13,7 +13,9 @@ interface IERC721 is IERC165{
     function balanceOf(address owner) external view returns (uint balance);
 
     function ownerOf(uint tokenId) external view returns (address owner) ;
-    
+
+    function safeTransferFrom(address from, address to, uint tokenId) external;
+
     function safeTransferFrom(address from, address to, uint tokenId, bytes calldata data) external;
 
     function transferFrom(address from, address to, uint tokenId) external;
@@ -89,7 +91,7 @@ contract ERC721 is IERC721 {
         return _balances[_owner];
     }
 
-    function ownerOf(uint _tokenId) external override view returns (address owner) {
+    function ownerOf(uint _tokenId) public override view returns (address owner) {
         owner =  _owners[_tokenId];
         require(owner != address(0), "owner = zero address");
     }
@@ -130,6 +132,79 @@ contract ERC721 is IERC721 {
         require(_to != address(0), "transfer to zero address");
 
         _approve(_owner, address(0), _tokenId);
+
+        _balances[_from] -= 1;
+        _balances[_to] += 1;
+        _owners[_tokenId] = _to;
+
+        emit Transfer(_from, _to, _tokenId);
     }
 
+    function transferFrom(address _from, address _to, uint _tokenId) external override {
+        address owner = ownerOf(_tokenId);
+        require(_isApprovedOrOwner(owner, msg.sender, _tokenId), "not owner nor approved");
+
+        _transfer(owner, _from, _to, _tokenId);
+    }
+
+    function _checkOnERC721Received(address _from, address _to, uint tokenId, bytes memory _data) private returns (bool) {
+        if (_to.isContract()) {
+            return IERC721Receiver(_to).onERC721Received(
+                _from,
+                _to,
+                tokenId,
+                _data
+            ) == IERC721Receiver.onERC721Received.selector;
+        }
+        return false;
+    }
+
+    function _safeTransferFrom(address _owner, address _from, address _to, uint _tokenId, bytes memory _data) private  {
+        _transfer(_owner, _from, _to, _tokenId);
+        require(_checkOnERC721Received(_from, _to, _tokenId, _data ), "not ERC721Receiver");
+    }
+    
+    
+    function safeTransferFrom(
+        address _from,
+        address _to,
+        uint _tokenId,
+        bytes memory _data
+    )
+    public
+    override
+    {
+        address owner = ownerOf(_tokenId);
+        require(
+            _isApprovedOrOwner(owner, msg.sender, _tokenId),
+            "not owner nor appzroved"
+        );
+
+        _safeTransferFrom(owner, _from, _to, _tokenId, _data);
+    }
+
+    function safeTransferFrom(address _from, address _to, uint _tokenId) external override {
+        safeTransferFrom(_from, _to, _tokenId, "");
+    }
+
+    function mint(address _to, uint _tokenId) external {
+        require(_to != address(0), "mint to zero address");
+        require(_owners[_tokenId] == address(0), "token alread minted");
+
+        _balances[_to] += 1;
+        _owners[_tokenId] = _to;
+
+        emit Transfer(address(0), _to, _tokenId);
+    }
+
+    function burn(uint _tokenId) external {
+        address owner = _owners[_tokenId];
+        _approve(owner, address(0), _tokenId);
+
+        _balances[owner] -= 1;
+
+        delete _owners[_tokenId];
+        emit Transfer(owner, address(0), _tokenId);
+    }
+    
 }
