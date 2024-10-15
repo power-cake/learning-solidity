@@ -23,7 +23,7 @@ module.exports = {
                 runs: 100,
             },
             viaIR: true
-        }
+        },
     },
     networks: {
         sepolia: {
