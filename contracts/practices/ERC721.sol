@@ -66,7 +66,7 @@ contract ERC721 is IERC721 {
         address indexed operator,
         bool approved);
 
-//    Mapping owner address to token count
+//    Mapping tokenId  to owner address
     mapping(uint => address) private _owners;
 
 //    Mapping owner address to token count
