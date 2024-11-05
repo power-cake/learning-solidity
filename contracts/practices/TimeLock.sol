@@ -10,7 +10,7 @@ contract TimeLock {
     error AlreadyQueuedError(bytes32 txId);
     error TimestampNotInRangeError(uint blockTimestamp, uint timestamp);
     error NotQueuedError(bytes32 txId);
-    error TimestamoNotPassedError(uint blockTimestamp, uint timestamp);
+    error TimestampNotPassedError(uint blockTimestamp, uint timestamp);
     error TimestampExpiredError(uint blockTimestamp, uint expiredAt);
     error TxFailedError(bytes32 txId);
 
@@ -74,8 +74,8 @@ contract TimeLock {
         bytes calldata _data,
         uint _timestamp
     )
-    external
-    onlyOwner
+        external
+        onlyOwner
     {
         bytes32 txId = getTxId(_target, _value, _func, _data, _timestamp);
         if (queued[txId]) {
@@ -104,7 +104,7 @@ contract TimeLock {
             revert NotQueuedError(txId);
         }
         if (block.timestamp < _timestamp) {
-            revert TimestamoNotPassedError(block.timestamp, _timestamp);
+            revert TimestampNotPassedError(block.timestamp, _timestamp);
         }
 
         if (block.timestamp > _timestamp + GRACE_PERIOD) {
