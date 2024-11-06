@@ -64,6 +64,9 @@ contract MultiSigWallet {
         emit Deposit(msg.sender, msg.value);
     }
 
+    /**
+     * @dev  1.提交转账申请
+     */
     function submit(
         address _to,
         uint _value,
@@ -81,7 +84,7 @@ contract MultiSigWallet {
         emit Submit(transactions.length - 1);
     }
 
-//    批准
+//    2.批准转账申请
     function approve(uint _txId)
         external
         onlyOwner
@@ -101,6 +104,9 @@ contract MultiSigWallet {
         }
     }
 
+    /**
+     * @dev 执行转账
+     */
     function execute(uint _txId) external txExists(_txId) notExecuted(_txId) {
         require(_getApprovalCount(_txId)>= required, "approved < required");
         Transaction storage transaction = transactions[_txId];
