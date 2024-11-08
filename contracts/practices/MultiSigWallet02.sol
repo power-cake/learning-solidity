@@ -117,6 +117,7 @@ contract MultiSigWallet02 {
     {
         // 签名的格式：{bytes32 r}{bytes32 s}{uint8 v}
         assembly {
+//            截取当前的签名
             let signaturePos := mul(0x41, pos)
             r := mload(add(signatures, add(signaturePos, 0x20)))
             s := mload(add(signatures, add(signaturePos, 0x40)))

@@ -12,8 +12,8 @@ contract UUPSProxy {
     address public admin;
     string public words;
 
-    constructor(address _implememtion) {
-        address = msg.sender;
+    constructor(address _implementation) {
+        admin = msg.sender;
         implementation = _implementation;
     }
 
@@ -36,7 +36,7 @@ contract UUPS1 {
     }
 
     function upgrade(address newImplementation) external {
-        require(msg.value == admin);
+        require(msg.sender == admin);
         implementation = newImplementation;
     }
 }
@@ -55,7 +55,7 @@ contract UUPS2 {
     }
 
     function upgrade(address newImplementation) external {
-        require(msg.value == admin);
+        require(msg.sender == admin);
         implementation = newImplementation;
     }
 }
