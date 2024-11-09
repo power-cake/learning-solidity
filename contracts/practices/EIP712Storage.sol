@@ -30,8 +30,8 @@ import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 contract EIP712Storage {
     using ECDSA for bytes32;
 
-    bytes32 private constant EIP712DOMAIN_TYPEHASH = keccak256("EIP712domain(string name, string version, uint256 chainId, address verifyContract)");
-    bytes32 private constant STORAGE_TYPEHASH = keccak256("Storage(address spender, uint256 number)");
+    bytes32 private constant EIP712DOMAIN_TYPEHASH = keccak256("EIP712domain(string name,string version,uint256 chainId,address verifyContract)");
+    bytes32 private constant STORAGE_TYPEHASH = keccak256("Storage(address spender,uint256 number)");
     bytes32 private DOMAIN_SEPARATOR;
     uint private number;
     address public owner;
